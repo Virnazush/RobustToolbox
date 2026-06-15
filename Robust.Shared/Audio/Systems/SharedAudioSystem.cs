@@ -305,6 +305,9 @@ public abstract partial class SharedAudioSystem : EntitySystem
         return new ResolvedPathSpecifier(string.Empty);
     }
 
+    protected static bool IsNullSound([NotNullWhen(false)] ResolvedSoundSpecifier? specifier)
+        => ResolvedSoundSpecifier.IsNullOrEmpty(specifier);
+
     /// <summary>
     /// Resolves the filepath to a sound file.
     /// </summary>

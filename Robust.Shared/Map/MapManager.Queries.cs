@@ -26,7 +26,8 @@ internal partial class MapManager
         {
             foreach (var id in chunk.Fixtures)
             {
-                var fixture = grid.Comp.Fixtures[id];
+                if (!grid.Comp.Fixtures.TryGetValue(id, out var fixture))
+                    continue;
 
                 for (var j = 0; j < fixture.Shape.ChildCount; j++)
                 {

@@ -83,7 +83,7 @@ public sealed partial class AudioSystem : SharedAudioSystem
     /// <inheritdoc />
     public override (EntityUid Entity, AudioComponent Component)? PlayGlobal(ResolvedSoundSpecifier? specifier, Filter playerFilter, bool recordReplay, AudioParams? audioParams = null)
     {
-        if (specifier is null)
+        if (IsNullSound(specifier))
             return null;
 
         var entity = SetupAudio(specifier, audioParams);
@@ -95,7 +95,7 @@ public sealed partial class AudioSystem : SharedAudioSystem
     /// <inheritdoc />
     public override (EntityUid Entity, AudioComponent Component)? PlayEntity(ResolvedSoundSpecifier? specifier, Filter playerFilter, EntityUid uid, bool recordReplay, AudioParams? audioParams = null)
     {
-        if (specifier is null)
+        if (IsNullSound(specifier))
             return null;
 
         if (TerminatingOrDeleted(uid))
@@ -117,7 +117,7 @@ public sealed partial class AudioSystem : SharedAudioSystem
     /// <inheritdoc />
     public override (EntityUid Entity, AudioComponent Component)? PlayPvs(ResolvedSoundSpecifier? specifier, EntityUid uid, AudioParams? audioParams = null)
     {
-        if (specifier is null)
+        if (IsNullSound(specifier))
             return null;
 
         if (TerminatingOrDeleted(uid))
@@ -132,7 +132,7 @@ public sealed partial class AudioSystem : SharedAudioSystem
     /// <inheritdoc />
     public override (EntityUid Entity, AudioComponent Component)? PlayStatic(ResolvedSoundSpecifier? specifier, Filter playerFilter, EntityCoordinates coordinates, bool recordReplay, AudioParams? audioParams = null)
     {
-        if (specifier is null)
+        if (IsNullSound(specifier))
             return null;
 
         if (TerminatingOrDeleted(coordinates.EntityId))
@@ -155,7 +155,7 @@ public sealed partial class AudioSystem : SharedAudioSystem
     public override (EntityUid Entity, AudioComponent Component)? PlayPvs(ResolvedSoundSpecifier? specifier, EntityCoordinates coordinates,
         AudioParams? audioParams = null)
     {
-        if (specifier is null)
+        if (IsNullSound(specifier))
             return null;
 
         if (TerminatingOrDeleted(coordinates.EntityId))

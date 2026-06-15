@@ -520,7 +520,7 @@ public sealed partial class AudioSystem : SharedAudioSystem
     /// <param name="audioParams"></param>
     private (EntityUid Entity, AudioComponent Component)? PlayGlobal(ResolvedSoundSpecifier? specifier, AudioParams? audioParams = null, bool recordReplay = true)
     {
-        if (specifier is null)
+        if (IsNullSound(specifier))
             return null;
 
         if (recordReplay && _replayRecording.IsRecording)
@@ -556,7 +556,7 @@ public sealed partial class AudioSystem : SharedAudioSystem
     /// <param name="entity">The entity "emitting" the audio.</param>
     private (EntityUid Entity, AudioComponent Component)? PlayEntity(ResolvedSoundSpecifier? specifier, EntityUid entity, AudioParams? audioParams = null, bool recordReplay = true)
     {
-        if (specifier is null)
+        if (IsNullSound(specifier))
             return null;
 
         if (recordReplay && _replayRecording.IsRecording)
@@ -605,7 +605,7 @@ public sealed partial class AudioSystem : SharedAudioSystem
     /// <param name="audioParams"></param>
     private (EntityUid Entity, AudioComponent Component)? PlayStatic(ResolvedSoundSpecifier? specifier, EntityCoordinates coordinates, AudioParams? audioParams = null, bool recordReplay = true)
     {
-        if (specifier is null)
+        if (IsNullSound(specifier))
             return null;
 
         if (recordReplay && _replayRecording.IsRecording)
