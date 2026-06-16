@@ -47,6 +47,9 @@ internal sealed partial class PvsSystem
         catch (Exception e) // Catch EVERY exception
         {
             var source = i >= 0 ? _sessions[i].Session.ToString() : "replays";
+            if (i >= 0)
+                CleanupFailedSessionState(_sessions[i]);
+
             Log.Log(LogLevel.Error, e, $"Caught exception while serializing game state for {source}.");
         }
     }
@@ -64,10 +67,39 @@ internal sealed partial class PvsSystem
         // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
         if (data.Session.Channel is not DummyChannel)
         {
-            data.StateStream = RobustMemoryManager.GetMemoryStream();
-            _serializer.SerializeDirect(data.StateStream, data.State);
+            var stream = RobustMemoryManager.GetMemoryStream();
+            try
+            {
+                _serializer.SerializeDirect(stream, data.State);
+                data.StateStream = stream;
+                stream = null;
+            }
+            finally
+            {
+                stream?.Dispose();
+            }
         }
 
+        data.ClearState();
+    }
+
+    private void CleanupFailedSessionState(PvsSession data)
+    {
+        data.StateStream?.Dispose();
+        data.StateStream = null;
+
+        if (data.ToSend != null)
+        {
+            _entDataListPool.Return(data.ToSend);
+            data.ToSend = null;
+        }
+
+        data.LastReceivedAck = _gameTiming.CurTick;
+        data.RequestedFull = true;
+        data.LeftView.Clear();
+        data.LastSent = null;
+        ClearSendHistory(data);
+        ClearPlayerPvsData(data);
         data.ClearState();
     }
 }

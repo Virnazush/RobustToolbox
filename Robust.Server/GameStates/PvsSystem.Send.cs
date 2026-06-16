@@ -49,7 +49,9 @@ internal sealed partial class PvsSystem
         // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
         if (data.Session.Channel is not DummyChannel)
         {
-            DebugTools.AssertNotEqual(data.StateStream, null);
+            if (data.StateStream == null)
+                return;
+
             var msg = new MsgState
             {
                 StateStream = data.StateStream,

@@ -47,28 +47,32 @@ internal sealed partial class PvsSystem
             return;
 
         var (toTick, lastSent) = session.LastSent.Value;
-
-        foreach (var intPtr in CollectionsMarshal.AsSpan(lastSent))
+        try
         {
-            ref var data = ref session.DataMemory.GetRef(intPtr.Index);
-            if (data.LastSeen == toTick)
-                continue;
+            foreach (var intPtr in CollectionsMarshal.AsSpan(lastSent))
+            {
+                ref var data = ref session.DataMemory.GetRef(intPtr.Index);
+                if (data.LastSeen == toTick)
+                    continue;
 
-            session.LeftView.Add(IndexToNetEntity(intPtr));
-            data.LastLeftView = toTick;
+                session.LeftView.Add(IndexToNetEntity(intPtr));
+                data.LastLeftView = toTick;
+            }
+
+            if (session.LeftView.Count == 0)
+                return;
+
+            var pvsMessage = new MsgStateLeavePvs {Entities = session.LeftView, Tick = toTick};
+
+            // PVS benchmarks use dummy sessions.
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+            if (session.Session.Status == SessionStatus.InGame && session.Channel != null)
+                _netMan.ServerSendMessage(pvsMessage, session.Channel);
         }
-
-        if (session.LeftView.Count == 0)
-            return;
-
-        var pvsMessage = new MsgStateLeavePvs {Entities = session.LeftView, Tick = toTick};
-
-        // PVS benchmarks use dummy sessions.
-        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-        if (session.Session.Status == SessionStatus.InGame && session.Channel != null)
-            _netMan.ServerSendMessage(pvsMessage, session.Channel);
-
-        session.LeftView.Clear();
+        finally
+        {
+            session.LeftView.Clear();
+        }
     }
 
     private record struct PvsLeaveJob(PvsSystem _pvs) : IParallelRobustJob
