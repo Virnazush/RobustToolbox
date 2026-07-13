@@ -14,7 +14,7 @@ namespace Robust.Server.GameStates;
 
 internal sealed partial class PvsSystem
 {
-    [Dependency] private readonly IRobustSerializer _serializer = default!;
+    [Dependency] private IRobustSerializer _serializer = default!;
 
     /// <summary>
     /// Get and serialize <see cref="GameState"/> objects for each player. Compressing & sending the states is done later.
@@ -51,6 +51,9 @@ internal sealed partial class PvsSystem
                 CleanupFailedSessionState(_sessions[i]);
 
             Log.Log(LogLevel.Error, e, $"Caught exception while serializing game state for {source}.");
+#if !EXCEPTION_TOLERANCE
+            throw;
+#endif
         }
     }
 
