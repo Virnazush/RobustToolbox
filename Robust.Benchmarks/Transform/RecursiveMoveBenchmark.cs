@@ -90,7 +90,7 @@ public class RecursiveMoveBenchmark : RobustIntegrationTest
         // Set up map and spawn player
         server.WaitPost(() =>
         {
-            var map = server.ResolveDependency<SharedMapSystem>().CreateMap(out var mapId);
+            var map = server.System<SharedMapSystem>().CreateMap(out var mapId);
             var gridComp = mapSys.CreateGridEntity(mapId);
             var grid = gridComp.Owner;
             mapSys.SetTile(grid, gridComp, Vector2i.Zero, new Tile(1));
